@@ -1,0 +1,2 @@
+/usr/bin/ar qc libarbitary_integer_library.a CMakeFiles/arbitary_integer_library.dir/src/integer.c.o CMakeFiles/arbitary_integer_library.dir/src/integer.cpp.o
+/usr/bin/ranlib libarbitary_integer_library.a
