@@ -9,3 +9,5 @@ set(
 )
 
 add_library( arbitary_integer_library STATIC ${SRCS} )
+
+target_include_directories( arbitary_integer_library PUBLIC include/ )

@@ -4,5 +4,7 @@
 
 int main()
 {
-    puts("Hello world!");
+    const Arbitary::Integer integer(10u);
+
+    std::cout << integer << std::endl;
 }
