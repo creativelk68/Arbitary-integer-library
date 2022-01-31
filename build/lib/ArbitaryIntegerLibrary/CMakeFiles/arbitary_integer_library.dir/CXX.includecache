@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../lib/ArbitaryIntegerLibrary/include/ArbitaryIntegerLibrary/integer.hpp
+integer_impl.hpp
+../lib/ArbitaryIntegerLibrary/include/ArbitaryIntegerLibrary/integer_impl.hpp
+ostream
+-
+
+../lib/ArbitaryIntegerLibrary/include/ArbitaryIntegerLibrary/integer_impl.hpp
+cstdlib
+-
+cstdint
+-
+limits
+-
+
+/home/creativelk68/Desktop/Arbitary-integer-library/lib/ArbitaryIntegerLibrary/src/integer.cpp
+ArbitaryIntegerLibrary/integer_impl.hpp
+/home/creativelk68/Desktop/Arbitary-integer-library/lib/ArbitaryIntegerLibrary/src/ArbitaryIntegerLibrary/integer_impl.hpp
+ArbitaryIntegerLibrary/integer.hpp
+/home/creativelk68/Desktop/Arbitary-integer-library/lib/ArbitaryIntegerLibrary/src/ArbitaryIntegerLibrary/integer.hpp
+limits
+-
+stdexcept
+-
+iostream
+-
+

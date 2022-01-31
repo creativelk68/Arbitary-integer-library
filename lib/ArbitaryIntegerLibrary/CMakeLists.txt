@@ -4,7 +4,6 @@ project( "Arbitary Integer Library" )
 
 set(
     SRCS
-    "src/integer.c"
     "src/integer.cpp"
 )
 

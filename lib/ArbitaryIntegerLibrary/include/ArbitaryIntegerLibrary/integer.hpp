@@ -1,6 +1,6 @@
 #pragma once
 
-#include "integer.h"
+#include "integer_impl.hpp"
 
 #include <ostream>
 
@@ -28,14 +28,14 @@ namespace Arbitary
         explicit inline Integer(const uint32_t& value) : m_integer(construct_integer_from_uint32(value)) {}
 
         // Destructs the integer
-        inline ~Integer() { destruct_integer(&m_integer); }
+        inline ~Integer() { destruct_integer(m_integer); }
 
 
         
         // Getters and methods for getting information about the integer-instance
 
         // Dumps the sign, if negative, and each digit separated by space into the console
-        inline void dump() const { dump_integer(&m_integer); }
+        inline void dump() const { dump_integer(m_integer); }
 
         // Returns, whether the instance is negative
         inline bool get_is_negative() const { return m_integer.is_negative; }
@@ -52,6 +52,9 @@ namespace Arbitary
 
 
         // Modifing methods
+
+        // Increment
+        inline void inc() { increment_integer(m_integer); }
 
         // Returns a regular pointer to the digits
         inline unsigned* get_digits() { return m_integer.digits; }
