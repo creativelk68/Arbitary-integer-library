@@ -58,6 +58,13 @@ namespace Arbitary
 
         // Returns a regular pointer to the digits
         inline unsigned* get_digits() { return m_integer.digits; }
+
+    
+        // Operators
+
+        // Increment operators
+        inline Integer& operator++() { inc(); }     // Prefix
+        inline Integer& operator++(int) { inc(); }  // Postfix
     };
 
 
