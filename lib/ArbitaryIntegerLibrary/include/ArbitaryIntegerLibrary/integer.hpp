@@ -16,21 +16,15 @@ namespace Arbitary
     public:
         // Constructors and destructor
 
-
         // Default constructor. Zero-initializes the integer
         inline Integer() : m_integer(construct_integer()) {}
-
 
         // Initializes the integer with a regular, decimal signed 32-bit value
         explicit inline Integer(const int32_t& value) : m_integer(construct_integer_from_int32(value)) {}
 
         // Initializes the integer with a regular, decimal unsigned 32-bit value
         explicit inline Integer(const uint32_t& value) : m_integer(construct_integer_from_uint32(value)) {}
-
-        // Destructs the integer
-        inline ~Integer() { destruct_integer(m_integer); }
-
-
+        
         
         // Getters and methods for getting information about the integer-instance
 
@@ -40,14 +34,17 @@ namespace Arbitary
         // Returns, whether the instance is negative
         inline bool get_is_negative() const { return m_integer.is_negative; }
 
-        // Returns the amount of digits
-        inline size_t get_size() const { return m_integer.size; }
+        // Returns the amount of extra allocated digits
+        inline size_t get_size() const { return m_integer.extra_digits.size(); }
 
-        // Returns a read-only pointer to the digits
-        inline const unsigned* get_digits() const { return m_integer.digits; }
+        // Returns a const ref to the std::vector of the allocated digits
+        inline const std::vector<unsigned>& get_allocated_digits() const { return m_integer.extra_digits; }
 
-        // Returns a specific digit at the given index
-        inline unsigned get_digit(const size_t& index) const { return m_integer.digits[index]; }
+        // Returns a specific allocated digit at the given index
+        inline unsigned get_allocated_digit(const size_t& index) const { return m_integer.extra_digits[index]; }
+
+        // Returns the non-allocated digit
+        inline const unsigned& get_first_digit() const { return m_integer.first_digit; }
 
 
 
@@ -56,15 +53,25 @@ namespace Arbitary
         // Increment
         inline void inc() { increment_integer(m_integer); }
 
-        // Returns a regular pointer to the digits
-        inline unsigned* get_digits() { return m_integer.digits; }
+        // Decrement
+        inline void dec() { decrement_integer(m_integer); }
+
+        // Returns a non-const reference to the non-allocated digit
+        inline unsigned& get_first_digit() { return m_integer.first_digit; }
+
+        // Returns a ref to the std::vector of the allocated digits
+        inline std::vector<unsigned>& get_allocated_digits() { return m_integer.extra_digits; }
 
     
         // Operators
 
         // Increment operators
-        inline Integer& operator++() { inc(); }     // Prefix
-        inline Integer& operator++(int) { inc(); }  // Postfix
+        inline Integer& operator++()    { inc(); return *this; }  // Prefix
+        inline Integer& operator++(int) { inc(); return *this; }  // Postfix
+
+        // Decrement operators
+        inline Integer& operator--()    { dec(); return *this; }  // Prefix
+        inline Integer& operator--(int) { dec(); return *this; }  // Postfix
     };
 
 

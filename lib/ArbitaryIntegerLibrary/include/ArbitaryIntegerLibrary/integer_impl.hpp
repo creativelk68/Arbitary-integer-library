@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include <limits>
+#include <vector>
 
 
 // This struct is the real Integer while the class is just a wrapper of it
@@ -13,8 +14,8 @@
     struct Integer_struct
     {
         bool is_negative;
-        unsigned* digits; // Digits are with two's-complement
-        size_t size, capacity;
+        unsigned first_digit;
+        std::vector<unsigned> extra_digits;
     };
 
 
@@ -37,7 +38,7 @@
     void increment_integer(Integer_struct& integer);
 
     // Decrement an Integer_struct instance
-    // void decrement(Integer_struct& integer); // Not implemented yet
+    void decrement_integer(Integer_struct& integer);
 
 
     // Invalidates the Integer instance by freeing the digits array and setting it to a nullptr. 

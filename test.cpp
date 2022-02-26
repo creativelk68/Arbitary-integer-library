@@ -13,4 +13,17 @@ int main()
     integer.inc();
 
     std::cout << integer << std::endl;
+
+    integer.dec();
+
+    std::cout << integer << std::endl;
+
+    Arbitary::Integer integer2(0);
+
+    std::cout << integer2 << std::endl;
+    
+    integer2--;
+
+    std::cout << integer2 << std::endl;
+
 }

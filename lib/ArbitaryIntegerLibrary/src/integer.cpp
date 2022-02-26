@@ -3,6 +3,10 @@
 
 #include <limits>
 #include <stdexcept>
+#include <cstring>
+#include <vector>
+
+#include <algorithm>
 
 #include <iostream>
 
@@ -13,26 +17,25 @@ std::ostream& Arbitary::operator<<(std::ostream& os, const Arbitary::Integer& in
     if (integer.get_is_negative())
     {
         os << '-';
-
-        for (unsigned i = 0; i < integer.get_size(); i++) { os << ~integer.get_digit(i) << ' '; }
+        os << ~integer.get_first_digit();
+        for (unsigned i = 0; i < integer.get_size(); i++) { os << ~integer.get_allocated_digit(i) << ' '; }
     } else
     {
-        for (unsigned i = 0; i < integer.get_size(); i++) { os << integer.get_digit(i) << ' '; }
+        os << integer.get_first_digit();
+        for (unsigned i = 0; i < integer.get_size(); i++) { os << integer.get_allocated_digit(i) << ' '; }
     }
      return os;
 }
 
 void Arbitary::dump_integer(const Integer_struct& integer)
 {
-    if (integer.is_negative)
-    {
-        putchar('-');
+    if (integer.is_negative) { putchar('-'); }
 
-        for (unsigned i = 0u; i < integer.size; i++) { printf("%u ", ~integer.digits[i]); }
-    } else
-    {
-        for (unsigned i = 0u; i < integer.size; i++) { printf("%u ", integer.digits[i]); }
-    }
+    printf("%u ", integer.first_digit);
+
+    for (unsigned i = 0u; i < integer.extra_digits.size(); i++) { printf("%u ", integer.extra_digits[i]); }
+
+    putchar('\n');
 }
 
 
@@ -44,11 +47,10 @@ Arbitary::Integer_struct Arbitary::construct_integer()
     *   Constructs a zero-initialized Integer_struct and returns it.
     */
     Integer_struct integer;
-    integer.digits = (unsigned*) malloc(sizeof(unsigned));
-    *integer.digits = 0u;
-    integer.capacity = integer.size = 1u;
 
     integer.is_negative = false;
+
+    integer.first_digit = 0u;
 
     return integer;
 }
@@ -66,12 +68,8 @@ Arbitary::Integer_struct Arbitary::construct_integer_from_int32(const int32_t& v
     */ 
     Integer_struct integer;
 
-    integer.digits = reinterpret_cast<unsigned*>(malloc(sizeof(unsigned)));
-
-    integer.is_negative = static_cast<bool>(value >> 31);
-    *integer.digits = (integer.is_negative) ? ~abs(value) : abs(value);
-
-    integer.size = integer.capacity = 1u;
+    integer.is_negative = value < 0;
+    integer.first_digit = static_cast<unsigned>(abs(value));
 
     return integer;
 }
@@ -88,12 +86,10 @@ Arbitary::Integer_struct Arbitary::construct_integer_from_uint32(const uint32_t&
     *            to prevent memory leaks
     */ 
     Integer_struct integer;
-    integer.digits = reinterpret_cast<unsigned*>(malloc(4u));
+
+    integer.first_digit = static_cast<unsigned>(value);
 
     integer.is_negative = false;
-    *integer.digits = value;
-
-    integer.size = integer.capacity = 1u;
 
     return integer;
 }
@@ -104,43 +100,111 @@ Arbitary::Integer_struct Arbitary::construct_integer_from_uint32(const uint32_t&
 // Increment an Integer_struct instance
 void Arbitary::increment_integer(Integer_struct& integer)
 {
-    // Check for Integer validity
-    if (integer.digits == nullptr) throw std::invalid_argument("integer is invalid!");
+    /*
+    *   Increments the Integer-instance by 1
+    *
+    *   Parameters:
+    *   - struct Integer_struct& integer : A reference to an instance of the Integer_struct struct, whose value should be incremented
+    * 
+    *   Returns: void
+    * 
+    *   Performance: O(n), where n is the amount of digits of the Integer
+    */ 
+
+   if (integer.extra_digits.empty())
+   {
+
+       // Increment and check for overflow
+       if (++integer.first_digit != 0u) { return; }
+
+       // Handle overflow
+       integer.extra_digits.push_back(0u);
+       integer.first_digit = 1u;
+
+       return;
+   }
 
     bool carry = false;
 
-    for (unsigned i = integer.size - 1; i < integer.size; i--)
+    const size_t size = integer.extra_digits.size();
+
+    for (unsigned i = size - 1; i < size; i--)
     {
-        integer.digits[i]++;
-        if (integer.digits[i] == 0u) { carry = true; }
+        integer.extra_digits[i]++;
+        if (integer.extra_digits[i] == 0u) { carry = true; continue; }
+        return;
     }
 
     if (carry)
     {
-        if (integer.size < integer.capacity) { integer.digits[integer.size++] = 1u; return; }
+        if (++integer.first_digit != 0u) { return; }
 
-        integer.digits = reinterpret_cast<unsigned*>( realloc(integer.digits, (integer.capacity + 1u) * sizeof(unsigned)) );
-        if (integer.digits == nullptr) throw std::bad_alloc();
-
-        integer.capacity++;
-        integer.size++;
-
-        integer.digits[0] = 1u;
-        integer.digits[integer.size-1] = 0u;
+        // Handle overflow
+        integer.first_digit++;
+        integer.extra_digits.push_back(0u);
     }
 }
 
-// Destructor
 
-void Arbitary::destruct_integer(Integer_struct& integer) {
-    /*
-    *   Frees all dynamic allocated ressources of the integer.
-    *
-    *   Parameters:
-    *   - struct Integer_struct* integer : A pointer to an instance of the Integer_struct struct, whose ressources are supposed to be freed after this function call
-    * 
-    *   Returns: nothing, just void
-    */ 
-    free((void*) integer.digits);
-    integer.digits = nullptr;
+// Decrement an Integer_struct instance
+void Arbitary::decrement_integer(Integer_struct& integer)
+{
+    if (integer.extra_digits.empty())
+    {
+        if (integer.first_digit = 0u)
+        {
+            integer.is_negative = true;
+            integer.first_digit = 1u;
+            return;
+        }
+        
+        if (integer.first_digit == std::numeric_limits<unsigned>::max() && integer.is_negative)
+        {
+            integer.first_digit = 1u;
+            integer.extra_digits.push_back(0u);
+            return;
+        }
+
+        if (integer.is_negative) { integer.first_digit++; }
+        else                     { integer.first_digit--; }
+
+        return;
+    }
+
+    bool carry = false;
+
+    const size_t size = integer.extra_digits.size();
+
+    if (integer.is_negative)
+    {
+        for (unsigned i = size - 1; i < size; i--)
+        {
+            if (++integer.extra_digits[i] == 0u) { carry = true; }
+        }
+    }
+    else
+    {
+        for (unsigned i = size - 1; i < size; i--)
+        {
+            if (integer.extra_digits[i]-- == 0u) { carry = true; }
+        }
+    }
+
+    if (carry)
+    {
+        if (integer.is_negative && integer.first_digit == std::numeric_limits<unsigned>::max())
+        {
+            integer.first_digit = 1u;
+            integer.extra_digits.push_back(0u);
+        }
+        else
+        {
+            integer.first_digit = integer.extra_digits[0];
+
+            if (size == 1u) { integer.extra_digits.pop_back(); return; }
+
+            std::rotate(integer.extra_digits.begin(), integer.extra_digits.begin() + 1, integer.extra_digits.end());
+            integer.extra_digits.pop_back();
+        }
+    }
 }
