@@ -19,6 +19,8 @@ cstdint
 -
 limits
 -
+vector
+-
 
 /home/creativelk68/Desktop/Arbitary-integer-library/lib/ArbitaryIntegerLibrary/src/integer.cpp
 ArbitaryIntegerLibrary/integer_impl.hpp
@@ -30,6 +32,10 @@ limits
 stdexcept
 -
 cstring
+-
+vector
+-
+algorithm
 -
 iostream
 -

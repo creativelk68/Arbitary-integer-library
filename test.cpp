@@ -8,22 +8,41 @@ int main()
 {
     Arbitary::Integer integer(std::numeric_limits<unsigned>::max());
 
-    std::cout << integer << std::endl;
+    integer.dump();
 
-    integer.inc();
+    integer++;
 
-    std::cout << integer << std::endl;
+    integer.dump();
 
-    integer.dec();
+    integer--;
 
-    std::cout << integer << std::endl;
+    integer.dump();
 
-    Arbitary::Integer integer2(0);
+    integer = Arbitary::Integer();
 
-    std::cout << integer2 << std::endl;
-    
-    integer2--;
+    integer.dump();
 
-    std::cout << integer2 << std::endl;
+    integer--;
 
+    integer.dump();
+
+    integer--;
+
+    integer.dump();
+
+    integer++;
+
+    integer.dump();
+
+    integer++;
+
+    integer.dump();
+
+    integer++;
+
+    integer.dump();
+
+    integer--;
+
+    integer.dump();
 }

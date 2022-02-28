@@ -69,6 +69,7 @@ Arbitary::Integer_struct Arbitary::construct_integer_from_int32(const int32_t& v
     Integer_struct integer;
 
     integer.is_negative = value < 0;
+
     integer.first_digit = static_cast<unsigned>(abs(value));
 
     return integer;
@@ -114,14 +115,24 @@ void Arbitary::increment_integer(Integer_struct& integer)
    if (integer.extra_digits.empty())
    {
 
-       // Increment and check for overflow
-       if (++integer.first_digit != 0u) { return; }
+        // Increment and check for overflow
+        if (integer.is_negative)
+        {
+            if (--integer.first_digit == 0u)
+            {
+                integer.is_negative = false;
+                return;
+            }
+        }
+        else 
+        {
+            if (++integer.first_digit != 0u) { return; }
 
-       // Handle overflow
-       integer.extra_digits.push_back(0u);
-       integer.first_digit = 1u;
-
-       return;
+            // Handle overflow
+            integer.extra_digits.push_back(0u);
+            integer.first_digit = 1u;      
+            return;
+        }
    }
 
     bool carry = false;
@@ -151,7 +162,7 @@ void Arbitary::decrement_integer(Integer_struct& integer)
 {
     if (integer.extra_digits.empty())
     {
-        if (integer.first_digit = 0u)
+        if (integer.first_digit == 0u)
         {
             integer.is_negative = true;
             integer.first_digit = 1u;
