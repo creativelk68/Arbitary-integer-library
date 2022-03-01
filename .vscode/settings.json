@@ -6,5 +6,6 @@
         "*.tcc": "cpp",
         "new": "cpp",
         "limits": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": true
 }

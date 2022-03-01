@@ -14,6 +14,15 @@ int main()
 
     integer.dump();
 
+
+    /*Arbitary::Integer integer(std::numeric_limits<unsigned>::max());
+
+    integer.dump();
+
+    integer++;
+
+    integer.dump();
+
     integer--;
 
     integer.dump();
@@ -44,5 +53,5 @@ int main()
 
     integer--;
 
-    integer.dump();
+    integer.dump();*/
 }

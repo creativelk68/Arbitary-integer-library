@@ -8,8 +8,8 @@
 
 // This struct is the real Integer while the class is just a wrapper of it
 
-    namespace Arbitary
-    {
+namespace Arbitary
+{
 
     struct Integer_struct
     {
@@ -40,11 +40,7 @@
     // Decrement an Integer_struct instance
     void decrement_integer(Integer_struct& integer);
 
-
-    // Invalidates the Integer instance by freeing the digits array and setting it to a nullptr. 
-
-    void destruct_integer(Integer_struct& integer);
-
-
+    // Prints all digits space separated of the Integer, prefixed with a minus-sign if negative
     void dump_integer(const Integer_struct& integer);
-}
+
+} // namespace Arbitary
