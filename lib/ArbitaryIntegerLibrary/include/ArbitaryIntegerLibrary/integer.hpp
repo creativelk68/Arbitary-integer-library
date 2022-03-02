@@ -19,11 +19,17 @@ namespace Arbitary
         // Default constructor. Zero-initializes the integer
         inline Integer() : m_integer(construct_integer()) {}
 
-        // Initializes the integer with a regular, decimal signed 32-bit value
+        // Initializes the integer with a decimal signed 32-bit value
         explicit inline Integer(const int32_t& value) : m_integer(construct_integer_from_int32(value)) {}
 
-        // Initializes the integer with a regular, decimal unsigned 32-bit value
+        // Initializes the integer with a decimal unsigned 32-bit value
         explicit inline Integer(const uint32_t& value) : m_integer(construct_integer_from_uint32(value)) {}
+
+        // Initializes the integer with a decimal signed 64-bit value
+        explicit inline Integer(const int64_t& value) : m_integer(construct_integer_from_int64(value)) {}
+
+        // Initializes the integer with a decimal unsigned 64-bit value
+        explicit inline Integer(const uint64_t& value) : m_integer(construct_integer_from_uint64(value)) {}
         
         
         // Getters and methods for getting information about the integer-instance

@@ -12,6 +12,9 @@
 
 static_assert(sizeof(unsigned) == 2u || sizeof(unsigned) == 4u || sizeof(unsigned) == 8u, "Unexpected size of datatype \"unsigned\" (expected either 2, 4 or 8 bytes)");
 
+#define ABS(x) ((x) < 0) ? -(x) : (x)
+
+
 // Printing
 
 std::ostream& Arbitary::operator<<(std::ostream& os, const Arbitary::Integer& integer)
@@ -59,7 +62,7 @@ Arbitary::Integer_struct Arbitary::construct_integer_from_int32(const int32_t& v
     *   Constructs an Integer_struct, initializes it, and returns it.
     *
     *   Parameters:
-    *   - int32_t value : Decimal value, the integer will have after being contructed
+    *   - int32_t value : Decimal value the integer will have after being contructed
     * 
     *   Returns: The constructed integer with the same value as the parameter.
     */
@@ -68,15 +71,21 @@ Arbitary::Integer_struct Arbitary::construct_integer_from_int32(const int32_t& v
 
     integer.is_negative = value < 0;
 
-    if constexpr(sizeof(unsigned) == 4u || sizeof(unsigned) == 8u) { integer.first_digit = static_cast<unsigned>(abs(value)); }
+    if constexpr(sizeof(unsigned) == 4u || sizeof(unsigned) == 8u) { integer.first_digit = static_cast<unsigned>(ABS(value)); }
     else
     {
-        constexpr uint32_t base16 = 0xFFFF + 1;
+        constexpr uint32_t base16 = 65536;
 
-        const uint32_t abs_value = (integer.is_negative) ? -value : value;
+        const uint32_t abs_val = ABS(value);
 
-        integer.extra_digits.push_back(abs_value % base16);
-        integer.first_digit = abs_value / base16;
+        if (abs_val < base16)
+        {
+            integer.first_digit = static_cast<unsigned>(abs_val);
+        } else
+        {
+            integer.extra_digits.push_back(abs_val % base16);
+            integer.first_digit = abs_val / base16;
+        }
     }    
 
     return integer;
@@ -88,7 +97,7 @@ Arbitary::Integer_struct Arbitary::construct_integer_from_uint32(const uint32_t&
     *   Constructs an Integer_struct, initializes it, and returns it.
     *
     *   Parameters:
-    *   - uint32_t value : Decimal value, the integer will have after being contructed
+    *   - uint32_t value : Decimal value the integer will have after being contructed
     * 
     *   Returns: The constructed integer with the same value as the parameter.
     */ 
@@ -99,10 +108,127 @@ Arbitary::Integer_struct Arbitary::construct_integer_from_uint32(const uint32_t&
     if constexpr (sizeof(unsigned) == 4u || sizeof(unsigned) == 8u) { integer.first_digit = static_cast<unsigned>(value); }
     else
     {
-        constexpr uint32_t base16 = 0xFFFF + 1;
+        constexpr uint32_t base16 = 65536;
 
-        integer.extra_digits.push_back(value % base16);
-        integer.first_digit = value / base16;
+        if (value >= base16)
+        {
+            integer.extra_digits.push_back(value % base16);
+            integer.first_digit = value / base16;
+        } else
+        {
+            integer.first_digit = static_cast<unsigned>(value);
+        }
+    }
+
+    return integer;
+}
+
+
+Arbitary::Integer_struct Arbitary::construct_integer_from_int64(const int64_t& value)
+{
+    /*
+    *   Constructs an Integer_struct, initializes it, and returns it.
+    *
+    *   Parameters:
+    *   - int64_t value : Decimal value the integer will have after being contructed
+    * 
+    *   Returns: The constructed integer with the same value as the parameter.
+    */
+    
+    Integer_struct integer;
+
+    integer.is_negative = value < 0;
+
+    if constexpr (sizeof(unsigned) == 8u) { integer.first_digit = static_cast<unsigned>( ABS(value) ); }
+    else if constexpr (sizeof(unsigned) == 4u)
+    {
+        constexpr uint64_t base32 = 4294967296;
+
+        const uint64_t abs_val = ABS(value);
+
+        if (abs_val < base32)
+        {
+            integer.first_digit = static_cast<unsigned>(abs_val);            
+        } else
+        {
+            integer.extra_digits.push_back(abs_val % base32);
+            integer.first_digit = abs_val / base32;
+        }
+
+    } else
+    {
+        constexpr uint32_t base16 = 65536;
+
+        const uint64_t abs_val = ABS(value);
+
+        if (abs_val < base16)
+        {
+            integer.first_digit = static_cast<unsigned>(value);
+        } else
+        {
+            uint64_t rem = abs_val;
+
+            while (rem >= base16)
+            {
+                integer.extra_digits.push_back(rem % base16);
+                rem /= base16;
+            }
+
+            std::reverse(integer.extra_digits.begin(), integer.extra_digits.end());
+
+            integer.first_digit = rem;
+        }
+    }
+
+    return integer;
+}
+
+
+Arbitary::Integer_struct Arbitary::construct_integer_from_uint64(const uint64_t& value)
+{
+    /*
+    *   Constructs an Integer_struct, initializes it, and returns it.
+    *
+    *   Parameters:
+    *   - uint64_t value : Decimal value the integer will have after being contructed
+    * 
+    *   Returns: The constructed integer with the same value as the parameter.
+    */
+
+    Integer_struct integer;
+
+    integer.is_negative = false;
+
+    if constexpr (sizeof(unsigned) == 8u) { integer.first_digit = static_cast<unsigned>(value); }
+    else if constexpr (sizeof(unsigned) == 4u)
+    {
+        constexpr uint64_t base32 = 4294967296;
+
+        if (value < base32) { integer.first_digit = static_cast<unsigned>(value); }
+        else
+        {
+            integer.extra_digits.push_back(value % base32);
+            integer.first_digit = value / base32;
+        }
+    } else
+    {
+        constexpr int32_t base16 = 65536;
+
+        if (value < base16) { integer.first_digit = static_cast<unsigned>(value); }
+        else
+        {
+            uint64_t rem = value;
+
+            while (rem >= base16)
+            {
+                integer.extra_digits.push_back(rem % base16);
+                rem /= base16;
+            }
+
+            std::reverse(integer.extra_digits.begin(), integer.extra_digits.end());
+
+            integer.first_digit = static_cast<unsigned>(rem);
+        }
     }
 
     return integer;

@@ -20,18 +20,19 @@ namespace Arbitary
 
 
     // This function returns a new zero-initialized integer. Integer must be freed using destruct_integer(Integer_struct*) function or manually by freeing each digit.
-
     Integer_struct construct_integer();
 
-
     // This function does the same as the contruct_integer() function, but initializes the Integers value with the parameter.
-
     Integer_struct construct_integer_from_int32(const int32_t& value);
 
-
     // Same as construct_integer_from_int32(const int32_t) but the parameter is unsigned.
-
     Integer_struct construct_integer_from_uint32(const uint32_t& value);
+
+    // Same as construct_integer_from_int32(const int32_t&) but the parameter is 64bit.
+    Integer_struct construct_integer_from_int64(const int64_t& value);
+
+    // Same as construct_integer_from_int64(const int64_t) but the parameter is unsigned.
+    Integer_struct construct_integer_from_uint64(const uint64_t& value);
 
 
     // Increment an Integer_struct instance
